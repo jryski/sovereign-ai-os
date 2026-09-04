@@ -46,6 +46,22 @@ physical sensing and actuation where useful
 
 Not every layer is implemented yet. Some capabilities have not been invented yet. The architectural goal is to build useful capability now while leaving clean seams for the frontier to evolve.
 
+## Public component repositories
+
+This parent exists because the program is implemented across multiple bounded repositories. The important public components are:
+
+| Component | Role in the program |
+| --- | --- |
+| **[Sovereign Memory Core](https://github.com/jryski/sovereign-memory-core)** | PostgreSQL reference implementation, custody/recovery/conformance proof, adversarial testing, and portable implementation evidence. |
+| **[Supabase User MCP](https://github.com/jryski/Supabase_user_MCP)** | Principal-bound runtime data plane for users and agents, including identity, narrow capabilities, and database-enforced authorization. |
+| **[Household OS](https://github.com/jryski/Household-OS)** | Public household-domain reference architecture and synthetic patterns for shared household knowledge, planning, assets, events, and integrations. |
+| **[Sovereign Vault](https://github.com/WireSpeedComputing/Sovereign-Vault)** | Public multi-user business-domain reference architecture and downstream business dogfood surface. |
+| **[Public AI Skills](https://github.com/jryski/Public_AI_SKills)** | Portable, inspectable AI operating behaviors and skills that can be used across models and runtimes. |
+
+There are additional private and operational components for protocol/specification work, runtime/orchestration, deployment overlays, model qualification, ingestion, recovery, and review. Those private repositories are intentionally **not named or linked from this public parent by default**. Their absence here is a disclosure boundary, not evidence that they do not exist.
+
+For task-level routing and authority boundaries, see **[ROUTES.md](ROUTES.md)**.
+
 ## What this parent repository is
 
 This repository exists to answer:
