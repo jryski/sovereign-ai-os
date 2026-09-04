@@ -452,21 +452,9 @@ The project succeeds when a new authorized frontier model can be introduced year
 
 A new model should not begin by recursively reading every repository.
 
-It should orient in this order:
-
-```text
-THESIS.md
-        ↓
-ROUTES.md
-        ↓
-HORIZON.md only when future direction matters
-        ↓
-owning child repository
-        ↓
-exact task / issue / decision / evidence
-        ↓
-minimum additional source required to act safely
-```
+Follow the cold-start order in `CONTEXT.md` (routes before thesis or
+horizon payload). Then load the minimum additional source required to
+act safely.
 
 When sources conflict, preserve the conflict and follow the real authority hierarchy.
 
