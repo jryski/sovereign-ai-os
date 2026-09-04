@@ -25,7 +25,7 @@ jobs:
       # Public/private boundary is an ALLOWLIST of known public identifiers.
       # Do not add a denylist of private repository names or locators; that
       # would publish the inventory the check exists to protect. Unrecognized
-      # route targets on the governed routing surface fail closed.
+      # GitHub repository targets in public Markdown fail closed.
       - name: Run parent validator
         run: python3 scripts/validate_parent.py
 

@@ -8,9 +8,9 @@ This checker asserts known-good public routes and identifiers. It does
 forbidden strings as a denylist.
 
 A denylist would publish the inventory the public/private boundary exists
-to protect. An allowlist fails closed: unrecognized route targets on the
-governed routing surface are defects. Absence from this public router is
-not evidence that a private component does not exist.
+to protect. An allowlist fails closed: unrecognized GitHub repository
+targets in public Markdown are defects. Absence from this public router
+is not evidence that a private component does not exist.
 
 Moving or current state must be generated or omitted. A file cannot cite
 the commit that contains it.
@@ -77,22 +77,38 @@ INTERNAL_ROUTE_TARGETS = frozenset(
 
 CONTRIBUTION_KINDS = frozenset({"orientation", "generic-upstream"})
 
-GOVERNED_ROUTING_FILES = ("README.md", "ROUTES.md", "CONTEXT.md")
+# CONTEXT.md is the original self-citation home. A router file cannot pin
+# the commit that contains it. Other Markdown may cite a historical SHA
+# when the line does not claim that the containing artifact is current.
+ROUTER_NO_SHA_FILES = frozenset({"CONTEXT.md"})
 LINE_LENGTH_EXEMPT = frozenset({"THESIS.md", "HORIZON.md", "LICENSE"})
 PROSE_LINE_LENGTH = 120
 
 SHA_RE = re.compile(r"\b[0-9a-f]{40}\b", re.IGNORECASE)
-GITHUB_REPO_RE = re.compile(
-    r"https://github\.com/([^/\s)#]+)/([^/\s)#]+)", re.IGNORECASE
+# Normalize http/https and optional www before allowlist comparison.
+# GitHub serves repository pages on both schemes; matching only https
+# would let an unrecognized http://github.com/owner/repo link through.
+GITHUB_URL_RE = re.compile(
+    r"https?://(?:www\.)?github\.com/([^/\s)#]+)(?:/([^/\s)#]+))?",
+    re.IGNORECASE,
 )
 MD_LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 CURRENCY_RES = (
     re.compile(r"source baseline", re.IGNORECASE),
-    re.compile(r"current (?:main|head) at", re.IGNORECASE),
+    re.compile(r"\b(?:main|head)\s+at\b", re.IGNORECASE),
     re.compile(r"as of commit", re.IGNORECASE),
     re.compile(r"this (?:file|document) is current", re.IGNORECASE),
     re.compile(r"v0\.1 candidate", re.IGNORECASE),
 )
+SHA_CURRENCY_LINE_RE = re.compile(
+    r"(source baseline|current(?:\s+\w+){0,3}\s+(?:main|head)|"
+    r"as of commit|this (?:file|document|repository) is current|"
+    r"v0\.1 candidate|\b(?:main|head)\s+at\b)",
+    re.IGNORECASE,
+)
+# Profile URLs have no repository path. Advisory URLs are paths under an
+# allowlisted public repository and are compared as owner/repo only.
+ALLOWED_GITHUB_PROFILES = frozenset({"jryski"})
 
 TEXT_SUFFIXES = {".md", ".yml", ".yaml", ".toml", ".py", ".txt"}
 TEXT_NAMES = {"LICENSE"}
@@ -149,23 +165,47 @@ def first_link_target(cell: str) -> str | None:
     return target.split("#", 1)[0].split("?", 1)[0]
 
 
-def github_repo_from_url(url: str) -> str | None:
-    match = GITHUB_REPO_RE.search(url)
+def parse_github_url(url: str) -> tuple[str, str | None] | None:
+    """Return (owner, repo_or_None) for a GitHub http(s) URL."""
+    match = GITHUB_URL_RE.search(url)
     if not match:
         return None
     owner = match.group(1)
-    repo = match.group(2).removesuffix(".git")
-    if owner.startswith(".") or repo.startswith("."):
+    repo = match.group(2)
+    if owner.startswith("."):
         return None
-    return f"{owner}/{repo}"
-
-
-def extract_github_repos(text: str) -> set[str]:
-    found: set[str] = set()
-    for owner, repo in GITHUB_REPO_RE.findall(text):
+    if repo:
         repo = repo.removesuffix(".git")
-        found.add(f"{owner}/{repo}")
-    return found
+        if repo.startswith("."):
+            return None
+        return owner, repo
+    return owner, None
+
+
+def github_repo_from_url(url: str) -> str | None:
+    parsed = parse_github_url(url)
+    if not parsed or parsed[1] is None:
+        return None
+    return f"{parsed[0]}/{parsed[1]}"
+
+
+def extract_github_targets(text: str) -> tuple[set[str], set[str]]:
+    """Return (repos as owner/repo, profile logins) from GitHub URLs."""
+    repos: set[str] = set()
+    profiles: set[str] = set()
+    for match in GITHUB_URL_RE.finditer(text):
+        owner = match.group(1)
+        repo = match.group(2)
+        if owner.startswith("."):
+            continue
+        if repo:
+            repo = repo.removesuffix(".git")
+            if repo.startswith("."):
+                continue
+            repos.add(f"{owner}/{repo}")
+        else:
+            profiles.add(owner)
+    return repos, profiles
 
 
 def in_code_or_table(line: str, in_fence: bool) -> tuple[bool, bool]:
@@ -221,21 +261,28 @@ def check_line_length(errors: list[str]) -> None:
 
 
 def check_currency_markers(errors: list[str]) -> None:
-    """Markdown must not assert its own currency with a commit hash.
+    """Reject self-currency claims, not every historical commit identifier.
 
-    GitHub Actions pin SHAs are dependency pins, not self-currency claims,
-    so workflow files are out of scope.
+    A 40-character SHA is a defect when CONTEXT.md (the router) pins a
+    commit, or when the same line asserts that the containing artifact is
+    current. Exact-head evidence in a decision pointer is allowed when the
+    line does not make that currency claim. Workflow pin SHAs are out of
+    scope because they are dependency pins, not document currency.
     """
     for path in ROOT.rglob("*.md"):
         if ".git" in path.parts:
             continue
         name = rel(path)
         text = path.read_text(encoding="utf-8")
-        for match in SHA_RE.finditer(text):
-            errors.append(
-                f"{name}: self-currency SHA {match.group(0)} is forbidden "
-                "(generate or omit moving state)"
-            )
+        for number, line in enumerate(text.splitlines(), start=1):
+            for match in SHA_RE.finditer(line):
+                in_router = name in ROUTER_NO_SHA_FILES
+                in_currency = bool(SHA_CURRENCY_LINE_RE.search(line))
+                if in_router or in_currency:
+                    errors.append(
+                        f"{name}:{number}: self-currency SHA {match.group(0)} "
+                        "is forbidden (generate or omit moving state)"
+                    )
         for pattern in CURRENCY_RES:
             if pattern.search(text):
                 errors.append(
@@ -268,19 +315,34 @@ def check_internal_links(errors: list[str]) -> None:
                 errors.append(f"{rel(path)}: broken internal link {href}")
 
 
-def check_governed_github_allowlist(errors: list[str]) -> None:
-    for name in GOVERNED_ROUTING_FILES:
-        path = ROOT / name
-        if not path.is_file():
+def check_github_allowlist(errors: list[str]) -> None:
+    """Allowlist GitHub repository links across every public Markdown file.
+
+    Reachability (lychee) is not membership. A live but unapproved
+    repository URL in CONTRIBUTING.md, SECURITY.md, or a decision pointer
+    is still an unrecognized public-boundary target. Profile URLs are
+    compared against ALLOWED_GITHUB_PROFILES; advisory URLs are compared
+    as their owner/repo prefix.
+    """
+    for path in ROOT.rglob("*.md"):
+        if ".git" in path.parts:
             continue
+        name = rel(path)
         text = path.read_text(encoding="utf-8")
-        for repo in sorted(extract_github_repos(text)):
-            # Compare case-sensitively to the published public identifiers.
+        repos, profiles = extract_github_targets(text)
+        for repo in sorted(repos):
             if repo not in ALLOWED_GITHUB_REPOS:
                 errors.append(
                     f"{name}: unrecognized GitHub route target {repo!r}. "
-                    "Governed routing files may only link allowlisted public "
+                    "Public Markdown may only link allowlisted public "
                     "repositories."
+                )
+        for profile in sorted(profiles):
+            if profile not in ALLOWED_GITHUB_PROFILES:
+                errors.append(
+                    f"{name}: unrecognized GitHub profile {profile!r}. "
+                    "Public Markdown may only link the allowlisted maintainer "
+                    "profile."
                 )
 
 
@@ -349,7 +411,7 @@ def check_routes_table(errors: list[str]) -> None:
 
 def check_readme_components(errors: list[str]) -> None:
     text = (ROOT / "README.md").read_text(encoding="utf-8")
-    found = extract_github_repos(text)
+    found, _profiles = extract_github_targets(text)
     missing = PUBLIC_CHILD_REPOS - found
     if missing:
         errors.append(
@@ -366,14 +428,39 @@ def check_agents_pointer(errors: list[str]) -> None:
         errors.append("AGENTS.md must stay a one-line pointer to CONTEXT.md")
 
 
+def _self_check() -> None:
+    assert github_repo_from_url("http://github.com/evil/private") == "evil/private"
+    assert (
+        github_repo_from_url("https://www.github.com/jryski/Household-OS")
+        == "jryski/Household-OS"
+    )
+    repos, profiles = extract_github_targets(
+        "see https://github.com/jryski and http://github.com/acme/secret"
+    )
+    assert profiles == {"jryski"}
+    assert repos == {"acme/secret"}
+    historical = (
+        "Accepted at exact head "
+        "`0123456789abcdef0123456789abcdef01234567`."
+    )
+    assert SHA_RE.search(historical)
+    assert not SHA_CURRENCY_LINE_RE.search(historical)
+    current = (
+        "Source baseline: main at "
+        "`0123456789abcdef0123456789abcdef01234567`"
+    )
+    assert SHA_CURRENCY_LINE_RE.search(current)
+
+
 def main() -> int:
+    _self_check()
     errors: list[str] = []
     check_required_files(errors)
     check_final_newlines(errors)
     check_line_length(errors)
     check_currency_markers(errors)
     check_internal_links(errors)
-    check_governed_github_allowlist(errors)
+    check_github_allowlist(errors)
     check_routes_table(errors)
     check_readme_components(errors)
     check_agents_pointer(errors)
@@ -385,8 +472,8 @@ def main() -> int:
         return 1
     print("parent validation passed")
     print(
-        "allowlist check: governed routing targets are restricted to known "
-        "public identifiers; no private-name denylist is used."
+        "allowlist check: public Markdown GitHub targets are restricted to "
+        "known public identifiers; no private-name denylist is used."
     )
     return 0
 
