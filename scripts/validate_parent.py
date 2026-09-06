@@ -89,15 +89,15 @@ SHA_RE = re.compile(r"\b[0-9a-f]{40}\b", re.IGNORECASE)
 # let http, schemeless, or SSH GitHub locators through. Do not treat bare
 # owner/repo prose as a locator.
 GITHUB_HTTP_RE = re.compile(
-    r"https?://(?:www\.)?github\.com/([^/\s)#]+)(?:/([^/\s)#]+))?",
+    r"(?:https?:)?//(?:www\.)?github\.com/([^/\s)#?]+)(?:/([^/\s)#?]+))?",
     re.IGNORECASE,
 )
 GITHUB_SCHEMELESS_RE = re.compile(
-    r"(?<![\w./@])github\.com/([^/\s)`\"'<>]+)/([^/\s)`\"'<>]+)",
+    r"(?<![\w@])(?:www\.)?github\.com/([^/\s)`\"'<>?#]+)/([^/\s)`\"'<>?#]+)",
     re.IGNORECASE,
 )
 GITHUB_SSH_RE = re.compile(
-    r"(?:git@|ssh://git@)github\.com[:/]([^/\s)`\"'<>]+)/([^/\s)`\"'<>]+)",
+    r"(?:git@|ssh://git@)github\.com[:/]([^/\s)`\"'<>?#]+)/([^/\s)`\"'<>?#]+)",
     re.IGNORECASE,
 )
 MD_LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
@@ -174,7 +174,11 @@ def first_link_target(cell: str) -> str | None:
 
 
 def _clean_github_segment(value: str) -> str:
-    return value.removesuffix(".git").rstrip(".,);:'\"")
+    value = value.split("?", 1)[0].split("#", 1)[0]
+    value = value.rstrip(".,);:'\"")
+    if value.lower().endswith(".git"):
+        value = value[:-4]
+    return value.rstrip(".,);:'\"")
 
 
 def _record_github_pair(
@@ -517,6 +521,7 @@ def _self_check() -> None:
 
     unrecognized = "example-not-allowlisted/example-repo"
     allowlisted = "jryski/sovereign-memory-core"
+    parent = "jryski/sovereign-ai-os"
     assert allowlist_rejected_repos(
         f"github.com/{unrecognized}"
     ) == {unrecognized}
@@ -533,6 +538,31 @@ def _self_check() -> None:
     assert "owner/repo" not in extract_github_targets(
         "see owner/repo in prose"
     )[0]
+
+    assert allowlist_rejected_repos(
+        f"//github.com/{unrecognized}"
+    ) == {unrecognized}
+    assert allowlist_rejected_repos(
+        f"www.github.com/{unrecognized}"
+    ) == {unrecognized}
+    assert extract_github_targets(
+        f"git@github.com:{parent}.git."
+    )[0] == {parent}
+    assert allowlist_rejected_repos(f"git@github.com:{parent}.git.") == set()
+    assert extract_github_targets(
+        f"github.com/{parent}?tab=readme-ov-file"
+    )[0] == {parent}
+    assert allowlist_rejected_repos(
+        f"github.com/{parent}?tab=readme-ov-file"
+    ) == set()
+    assert allowlist_rejected_repos(f"//github.com/{parent}") == set()
+    assert allowlist_rejected_repos(f"www.github.com/{parent}") == set()
+    assert allowlist_rejected_repos(
+        f"www.github.com/{unrecognized}?tab=readme-ov-file"
+    ) == {unrecognized}
+    assert allowlist_rejected_repos(
+        f"git@github.com:{unrecognized}.git."
+    ) == {unrecognized}
 
 
 def main() -> int:
