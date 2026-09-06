@@ -1,0 +1,29 @@
+# Explicit line-length policy
+#
+# - Routing, security, contributing, README, and decision-pointer prose:
+#   wrap at 120 characters (MD013).
+# - Tables and fenced code blocks are exempt. Route tables and ASCII
+#   diagrams are the public routing surface.
+# - THESIS.md and HORIZON.md are doctrine files and are omitted from
+#   markdownlint so hygiene work does not reflow mission text.
+#   scripts/validate_parent.py still requires a final newline and
+#   forbids self-currency markers in those files.
+
+config:
+  default: true
+  MD013:
+    line_length: 120
+    heading_line_length: 120
+    code_blocks: false
+    tables: false
+  MD024:
+    siblings_only: true
+  MD033: false
+
+globs:
+  - "**/*.md"
+  - "!THESIS.md"
+  - "!HORIZON.md"
+
+ignores:
+  - "LICENSE"

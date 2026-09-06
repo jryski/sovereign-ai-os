@@ -1,0 +1,9 @@
+# Link checker for the public parent. Internal Markdown links and
+# allowlisted public GitHub repositories should resolve.
+
+max_concurrency = 4
+retry_wait_time = 2
+timeout = 20
+user_agent = "sovereign-ai-os parent link checker"
+
+exclude_path = ["LICENSE"]
