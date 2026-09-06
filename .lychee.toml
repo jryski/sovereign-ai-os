@@ -6,11 +6,4 @@ retry_wait_time = 2
 timeout = 20
 user_agent = "sovereign-ai-os parent link checker"
 
-# Private Vulnerability Reporting may be disabled at the GitHub
-# repository-settings layer. This parent task does not change settings,
-# so the SECURITY.md URL is documented but not required to resolve.
-exclude = [
-  "^https://github.com/jryski/sovereign-ai-os/security/advisories/new$",
-]
-
 exclude_path = ["LICENSE"]

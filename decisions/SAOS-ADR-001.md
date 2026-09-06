@@ -48,15 +48,16 @@ the honest class is `prepared_not_exercised`.
 ## Writer-supplied provenance is not authenticated enforcement
 
 Do not describe writer-supplied `basis` / `source_citation` checks,
-including the current Sovereign Vault financial provenance trigger, as
+including a current private-deployment financial provenance trigger, as
 authenticated provenance enforcement.
 
 Those fields are convention and integrity checks until principal
 identity exists below the model. A guard that keys on a writer-supplied
 discriminator is a self-report check. It is not identity.
 
-This public pointer does not grant access to Vault internals and does
-not replace that repository's tests or decision records.
+This public pointer does not grant access to private-deployment
+internals and does not replace owning-repository tests or decision
+records.
 
 ## Order of operations
 

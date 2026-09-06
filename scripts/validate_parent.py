@@ -85,11 +85,19 @@ LINE_LENGTH_EXEMPT = frozenset({"THESIS.md", "HORIZON.md", "LICENSE"})
 PROSE_LINE_LENGTH = 120
 
 SHA_RE = re.compile(r"\b[0-9a-f]{40}\b", re.IGNORECASE)
-# Normalize http/https and optional www before allowlist comparison.
-# GitHub serves repository pages on both schemes; matching only https
-# would let an unrecognized http://github.com/owner/repo link through.
-GITHUB_URL_RE = re.compile(
+# Locator forms compared against the allowlist. Matching only https would
+# let http, schemeless, or SSH GitHub locators through. Do not treat bare
+# owner/repo prose as a locator.
+GITHUB_HTTP_RE = re.compile(
     r"https?://(?:www\.)?github\.com/([^/\s)#]+)(?:/([^/\s)#]+))?",
+    re.IGNORECASE,
+)
+GITHUB_SCHEMELESS_RE = re.compile(
+    r"(?<![\w./@])github\.com/([^/\s)`\"'<>]+)/([^/\s)`\"'<>]+)",
+    re.IGNORECASE,
+)
+GITHUB_SSH_RE = re.compile(
+    r"(?:git@|ssh://git@)github\.com[:/]([^/\s)`\"'<>]+)/([^/\s)`\"'<>]+)",
     re.IGNORECASE,
 )
 MD_LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
@@ -165,18 +173,43 @@ def first_link_target(cell: str) -> str | None:
     return target.split("#", 1)[0].split("?", 1)[0]
 
 
+def _clean_github_segment(value: str) -> str:
+    return value.removesuffix(".git").rstrip(".,);:'\"")
+
+
+def _record_github_pair(
+    owner: str, repo: str | None, repos: set[str], profiles: set[str]
+) -> None:
+    owner = _clean_github_segment(owner)
+    if not owner or owner.startswith("."):
+        return
+    if repo:
+        repo = _clean_github_segment(repo)
+        if not repo or repo.startswith("."):
+            return
+        repos.add(f"{owner}/{repo}")
+        return
+    profiles.add(owner)
+
+
 def parse_github_url(url: str) -> tuple[str, str | None] | None:
-    """Return (owner, repo_or_None) for a GitHub http(s) URL."""
-    match = GITHUB_URL_RE.search(url)
+    """Return (owner, repo_or_None) for a GitHub locator."""
+    repos, profiles = extract_github_targets(url)
+    if len(repos) == 1:
+        owner, repo = next(iter(repos)).split("/", 1)
+        return owner, repo
+    if len(profiles) == 1 and not repos:
+        return next(iter(profiles)), None
+    match = GITHUB_HTTP_RE.search(url)
     if not match:
         return None
-    owner = match.group(1)
+    owner = _clean_github_segment(match.group(1))
     repo = match.group(2)
-    if owner.startswith("."):
+    if not owner or owner.startswith("."):
         return None
     if repo:
-        repo = repo.removesuffix(".git")
-        if repo.startswith("."):
+        repo = _clean_github_segment(repo)
+        if not repo or repo.startswith("."):
             return None
         return owner, repo
     return owner, None
@@ -190,22 +223,21 @@ def github_repo_from_url(url: str) -> str | None:
 
 
 def extract_github_targets(text: str) -> tuple[set[str], set[str]]:
-    """Return (repos as owner/repo, profile logins) from GitHub URLs."""
+    """Return (repos as owner/repo, profile logins) from GitHub locators."""
     repos: set[str] = set()
     profiles: set[str] = set()
-    for match in GITHUB_URL_RE.finditer(text):
-        owner = match.group(1)
-        repo = match.group(2)
-        if owner.startswith("."):
-            continue
-        if repo:
-            repo = repo.removesuffix(".git")
-            if repo.startswith("."):
-                continue
-            repos.add(f"{owner}/{repo}")
-        else:
-            profiles.add(owner)
+    for match in GITHUB_HTTP_RE.finditer(text):
+        _record_github_pair(match.group(1), match.group(2), repos, profiles)
+    for match in GITHUB_SCHEMELESS_RE.finditer(text):
+        _record_github_pair(match.group(1), match.group(2), repos, profiles)
+    for match in GITHUB_SSH_RE.finditer(text):
+        _record_github_pair(match.group(1), match.group(2), repos, profiles)
     return repos, profiles
+
+
+def allowlist_rejected_repos(text: str) -> set[str]:
+    repos, _profiles = extract_github_targets(text)
+    return {repo for repo in repos if repo not in ALLOWED_GITHUB_REPOS}
 
 
 def in_code_or_table(line: str, in_fence: bool) -> tuple[bool, bool]:
@@ -260,29 +292,51 @@ def check_line_length(errors: list[str]) -> None:
                 )
 
 
+def line_has_currency_claim(line: str) -> bool:
+    return bool(SHA_CURRENCY_LINE_RE.search(line))
+
+
+def currency_sha_hits(name: str, text: str) -> list[tuple[int, str]]:
+    """Return (line, sha) pairs treated as self-currency claims.
+
+    A SHA is a defect in CONTEXT.md, on the same line as a currency
+    claim, or on a line adjacent to a currency claim (for example
+    ``Current head:`` followed by a 40-character SHA). Historical
+    exact-head citations without that claim are retained.
+    """
+    hits: list[tuple[int, str]] = []
+    lines = text.splitlines()
+    for number, line in enumerate(lines, start=1):
+        prev_line = lines[number - 2] if number >= 2 else ""
+        next_line = lines[number] if number < len(lines) else ""
+        adjacent = line_has_currency_claim(prev_line) or line_has_currency_claim(
+            next_line
+        )
+        in_currency = line_has_currency_claim(line) or adjacent
+        in_router = name in ROUTER_NO_SHA_FILES
+        if not (in_router or in_currency):
+            continue
+        for match in SHA_RE.finditer(line):
+            hits.append((number, match.group(0)))
+    return hits
+
+
 def check_currency_markers(errors: list[str]) -> None:
     """Reject self-currency claims, not every historical commit identifier.
 
-    A 40-character SHA is a defect when CONTEXT.md (the router) pins a
-    commit, or when the same line asserts that the containing artifact is
-    current. Exact-head evidence in a decision pointer is allowed when the
-    line does not make that currency claim. Workflow pin SHAs are out of
-    scope because they are dependency pins, not document currency.
+    Workflow pin SHAs are out of scope because they are dependency pins,
+    not document currency.
     """
     for path in ROOT.rglob("*.md"):
         if ".git" in path.parts:
             continue
         name = rel(path)
         text = path.read_text(encoding="utf-8")
-        for number, line in enumerate(text.splitlines(), start=1):
-            for match in SHA_RE.finditer(line):
-                in_router = name in ROUTER_NO_SHA_FILES
-                in_currency = bool(SHA_CURRENCY_LINE_RE.search(line))
-                if in_router or in_currency:
-                    errors.append(
-                        f"{name}:{number}: self-currency SHA {match.group(0)} "
-                        "is forbidden (generate or omit moving state)"
-                    )
+        for number, sha in currency_sha_hits(name, text):
+            errors.append(
+                f"{name}:{number}: self-currency SHA {sha} is forbidden "
+                "(generate or omit moving state)"
+            )
         for pattern in CURRENCY_RES:
             if pattern.search(text):
                 errors.append(
@@ -429,6 +483,9 @@ def check_agents_pointer(errors: list[str]) -> None:
 
 
 def _self_check() -> None:
+    sample_sha = "0123456789abcdef0123456789abcdef01234567"
+    pointer = "decisions/SAOS-ADR-001.md"
+
     assert github_repo_from_url("http://github.com/evil/private") == "evil/private"
     assert (
         github_repo_from_url("https://www.github.com/jryski/Household-OS")
@@ -439,17 +496,43 @@ def _self_check() -> None:
     )
     assert profiles == {"jryski"}
     assert repos == {"acme/secret"}
-    historical = (
-        "Accepted at exact head "
-        "`0123456789abcdef0123456789abcdef01234567`."
-    )
+
+    same_line = f"Current head: `{sample_sha}`"
+    assert currency_sha_hits(pointer, same_line) == [(1, sample_sha)]
+
+    adjacent = f"Current head:\n{sample_sha}\n"
+    assert currency_sha_hits(pointer, adjacent) == [(2, sample_sha)]
+
+    historical = f"Accepted at exact head `{sample_sha}`."
     assert SHA_RE.search(historical)
     assert not SHA_CURRENCY_LINE_RE.search(historical)
-    current = (
-        "Source baseline: main at "
-        "`0123456789abcdef0123456789abcdef01234567`"
-    )
+    assert currency_sha_hits(pointer, historical) == []
+
+    historical_wrap = f"Accepted at exact head\n`{sample_sha}`."
+    assert currency_sha_hits(pointer, historical_wrap) == []
+
+    current = f"Source baseline: main at `{sample_sha}`"
     assert SHA_CURRENCY_LINE_RE.search(current)
+    assert currency_sha_hits(pointer, current) == [(1, sample_sha)]
+
+    unrecognized = "example-not-allowlisted/example-repo"
+    allowlisted = "jryski/sovereign-memory-core"
+    assert allowlist_rejected_repos(
+        f"github.com/{unrecognized}"
+    ) == {unrecognized}
+    assert allowlist_rejected_repos(
+        f"git@github.com:{unrecognized}.git"
+    ) == {unrecognized}
+    assert allowlist_rejected_repos(f"github.com/{allowlisted}") == set()
+    assert allowlist_rejected_repos(
+        f"git@github.com:{allowlisted}.git"
+    ) == set()
+    assert allowlist_rejected_repos(
+        f"https://github.com/{allowlisted}"
+    ) == set()
+    assert "owner/repo" not in extract_github_targets(
+        "see owner/repo in prose"
+    )[0]
 
 
 def main() -> int:

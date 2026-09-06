@@ -27,6 +27,10 @@ payload.
 
 ## Downstream dogfood to generic upstream
 
+Wirespeed is operated by the same principal. It is not independent
+third-party review. It remains a separate deployment with its own
+identity, data, policy, and authority.
+
 Wirespeed and other deployments may observe real defects while dogfooding
 the architecture. Those observations do not become upstream truth by
 being true downstream.
