@@ -18,6 +18,23 @@ This is a design statement, not a claim that the complete system exists.
 [Component repositories](ROUTES.md) own implementation and acceptance evidence.
 [HORIZON.md](HORIZON.md) describes longer-term possibilities.
 
+## Protocol before implementation
+
+Sovereign Memory Protocol (SMP) is the foundation: shared rules intended to
+preserve sovereignty and provenance across changes in storage, models and tools.
+Custody is a mechanism for preserving those properties. Portability is an
+outcome that an implementation must demonstrate, not assume.
+
+Protocol semantics, substrate-specific profiles, reference implementations and
+deployment policies are distinct. Core demonstrates PostgreSQL mechanisms;
+User MCP provides an access component; Household OS and Vault apply the
+foundations to different domains. None becomes the protocol merely by being
+the first implementation.
+
+SMP is under development. Public architectural explanations are not a released
+normative standard. Adapt existing formats and systems where they fit rather
+than introduce incompatibility merely to create another protocol.
+
 ## What must survive replacement
 
 The durable record includes more than the text a model remembers:

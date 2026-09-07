@@ -8,6 +8,7 @@ It is **not** a status database, permission file, or complete inventory. Private
 | --- | --- | --- |
 | Program purpose and invariant principles | [`THESIS.md`](THESIS.md) | This parent thesis for public program orientation |
 | Plausible future / bridge to possible | [`HORIZON.md`](HORIZON.md) | Directional horizon only, not current-state evidence |
+| SMP foundation and relationship to memory engines | [Public architecture explanation](https://github.com/jryski/sovereign-memory-core/blob/main/docs/positioning.md) | Informative explanation only, not the normative specification or current release status |
 | PostgreSQL reference implementation, custody, recovery, conformance, adversarial evidence | [`jryski/sovereign-memory-core`](https://github.com/jryski/sovereign-memory-core) | Repository code, tests, status, releases, exact-head evidence |
 | Principal-bound Supabase user/agent runtime access | [`jryski/Supabase_user_MCP`](https://github.com/jryski/Supabase_user_MCP) | Identity/access implementation and its tests/evidence |
 | Public household-domain architecture and synthetic household patterns | [`jryski/Household-OS`](https://github.com/jryski/Household-OS) | Household reference schemas/contracts/tests only |

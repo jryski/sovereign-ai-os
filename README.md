@@ -22,6 +22,25 @@ A frontend outside any single model provider is a future direction, not a
 delivered application. This is not an attempt to replace every assistant,
 memory engine or integration.
 
+## SMP is the foundation
+
+Sovereign Memory Protocol (SMP) is the protocol work behind these projects.
+Its purpose is to preserve user authority and the provenance of information
+when models, applications, databases or providers change.
+
+It separates shared meaning from implementation: source evidence, changes,
+corrections, authority and recovery should remain understandable across systems.
+It does not prescribe a retrieval engine or require one database.
+
+Core provides a PostgreSQL reference implementation. User MCP develops bounded
+access. Household OS and Vault apply the shared foundations to different domains.
+The parent repository explains those relationships; it does not define the protocol.
+
+SMP remains under development, not a published standard or a blanket conformance
+claim. Start with the
+[public architecture explanation](https://github.com/jryski/sovereign-memory-core/blob/main/docs/positioning.md).
+That explanatory document is not a normative specification.
+
 ## Current state
 
 The complete system is not built. Component repositories own their code,
@@ -30,7 +49,7 @@ production readiness for a deployment.
 
 | Component | Purpose | Current limit |
 | --- | --- | --- |
-| [Sovereign Memory Core](https://github.com/jryski/sovereign-memory-core) | PostgreSQL memory, provenance and change history | Experimental; independent deployment acceptance and portable recovery remain open |
+| [Sovereign Memory Core](https://github.com/jryski/sovereign-memory-core) | PostgreSQL reference implementation | v0.3-alpha released with bounded PostgreSQL restore evidence; deployment readiness remains scope-specific |
 | [Supabase User MCP](https://github.com/jryski/Supabase_user_MCP) | Limited application-data access under user/client database permissions | Accepted local, read-only, synthetic-data profile; remote OAuth remains under review |
 | [Household OS](https://github.com/jryski/Household-OS) | Household planning and integration patterns | Early implementation with synthetic examples; not a ready-to-run household product |
 | [Sovereign Vault](https://github.com/WireSpeedComputing/Sovereign-Vault) | Business knowledge and operations schemas | Shared credentials do not prove separate human and agent identity |
@@ -41,6 +60,10 @@ in [draft PR #64](https://github.com/jryski/Supabase_user_MCP/pull/64);
 publication remains a separate decision under
 [issue #61](https://github.com/jryski/Supabase_user_MCP/issues/61).
 Read the component's current evidence before using it.
+
+Core's [v0.3-alpha release](https://github.com/jryski/sovereign-memory-core/releases/tag/v0.3-alpha)
+records PostgreSQL 15/16 conformance and perimeter evidence, plus an independent
+clean provider-exit restore on PostgreSQL 16. Its stated limits still apply.
 
 ## Where to start
 
