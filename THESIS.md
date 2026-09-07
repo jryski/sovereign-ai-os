@@ -1,475 +1,183 @@
-# Sovereign AI Platform — Governing Thesis
+# Sovereign AI OS: project principles
 
-**Status:** Canonical public program thesis  
-**Effective:** 2026-09-04  
-**Source lineage:** consolidates the earlier data-sovereignty thesis, mission/alignment work, Sovereign AI OS charter, and subsequent principal corrections. It is intended to preserve the mission, not erase the history that produced it.
+Updated: 2026-09-07. This document preserves the program's earlier
+data-sovereignty, mission and authority decisions in a shorter public guide.
+Git history retains the earlier wording.
 
-## Thesis in one sentence
+## Purpose
 
-Build a **long-lived, owner-controlled AI operating substrate** that preserves durable meaning, evidence, authority, context, work, and action history across changes in models, vendors, applications, runtimes, storage systems, and deployment domains, so an authorized AI can become deeply useful without becoming the owner of the person or organization it serves.
+Keep a person's or organization's knowledge, evidence, decisions, permissions
+and work history useful when models, applications and providers change.
 
-## Why this project exists
+WIRE SPEED COMPUTING LLC maintains the program, led by Jesse Ryski. The business
+can track development costs and provide future support or licensing. Those
+arrangements must preserve user control and interoperability. Company maintenance
+does not change existing component licenses or contributors' rights.
 
-AI is still in its infancy.
+This is a design statement, not a claim that the complete system exists.
+[Component repositories](ROUTES.md) own implementation and acceptance evidence.
+[HORIZON.md](HORIZON.md) describes longer-term possibilities.
 
-The models, interfaces, agent runtimes, memory systems, storage products, integration standards, and dominant vendors of today will not define the next several decades.
+## What must survive replacement
 
-The mistake would be to build a life, household, or business around whichever AI application happens to be best this year.
+The durable record includes more than the text a model remembers:
 
-The deeper problem is not simply that chats forget. Useful context, decisions, corrections, evidence, relationships, project state, permissions, workflows, and history are repeatedly trapped inside systems the user does not control. Each new model arrives partially blind. Each provider invents its own memory. Each application creates another silo.
+- Original evidence and its source.
+- The subject of a claim, what it says and what supports it.
+- Whether it is an observation, inference, proposal, accepted decision or dispute.
+- When it was observed, effective, recorded, accepted or superseded.
+- Corrections, conflicting evidence and the history of changes.
+- Who may read or change it, under which authority.
+- Intended work, actions taken, outcomes and verification.
 
-As AI becomes more capable, this fragmentation matters more because AI increasingly does not just answer questions. It acts.
+Models, interfaces, storage engines and integrations should be replaceable.
+Indexes, embeddings, summaries, caches and model-specific context are rebuildable
+views. They must not become the only copy of the evidence or its meaning.
 
-This project exists to make models, providers, applications, runtimes, and storage systems **replaceable while the durable organizational understanding survives**.
+## Accuracy requires evidence
 
-## This is not a financial endeavor
+A stronger model does not remove the need for provenance and review.
 
-This program is not being built as a startup thesis, monetization strategy, investment vehicle, or attempt to capture a market category.
+Preserve source material. Link derived claims to their evidence. Resolve entity
+identity separately from attributes. Keep conflicting claims visible. Record
+corrections as supersession rather than silently rewriting history.
 
-It is a **functional sovereignty project**: build infrastructure expected to remain useful for decades, first for a person and household and also for organizations that choose to operate under the same principles.
+Important rules need mechanical tests. Actions need receipts that distinguish
+attempted, completed, failed and verified outcomes. Verified corrections should
+improve later context assembly without turning model inference into fact.
 
-Commercial businesses can consume the architecture. Wirespeed can dogfood it. Individual components may eventually have licenses, hosted services, enterprise arrangements, or other economics around them. Those are downstream governance questions.
+When evidence is missing or stale, report that limit.
 
-They do not define the mission and should not distort the architecture toward lock-in, artificial scarcity, growth metrics, or commercial fashion at the expense of sovereignty and function.
+## Assemble only the context a task needs
 
-The primary measure is:
+Start with the authenticated principal, request, intent and available authority.
+Resolve relevant subjects, retrieve permitted evidence, then attach provenance,
+conflicts, policy and freshness. Give the worker a bounded context package.
 
-> **Does this make the human or organization more capable, continuous, accurate, autonomous, and less dependent on any single AI vendor?**
+Do not solve continuity by sending every model the entire archive. Retrieval
+engines and ranking systems can help select context; they do not determine
+canonical truth or access rights.
 
-## The governing principle
+## Keep different kinds of state distinct
 
-> **Own the durable meaning, evidence, authority, and action history. Treat models, applications, providers, storage engines, and integrations as replaceable clients and workers.**
+| Kind | What it records |
+| --- | --- |
+| Knowledge | Claims about the world and their history |
+| Operational state | What is happening now |
+| Planning | Intended work, dependencies, owners and approvals |
+| Action | An authorized attempt to change something |
+| Evidence and receipts | Support for claims about what occurred |
 
-An earlier formulation was:
+These records connect but have different lifetimes and authorities. Telemetry,
+financial history, work queues and agent conversations should not become one
+undifferentiated memory table.
 
-> **We own the durable data layer, not the application layer.**
+## Enforce authority outside the model
 
-That remains correct, but *data* is too narrow. The durable asset is not merely rows. It is the meaning surrounding those rows:
+Prompts are guidance, not security boundaries. Models and agents are workers;
+they cannot grant themselves authority.
 
-- what an entity is;
-- what is believed about it;
-- why that belief exists;
-- who or what observed or asserted it;
-- when it was true;
-- what conflicts with it;
-- what superseded it;
-- who may see or change it;
-- what work was intended;
-- what action was taken;
-- what happened afterward;
-- whether the outcome was verified.
+Use authenticated identity, scoped credentials, database permissions, bounded
+tools, integration scopes, sandboxing, approval, revocation and audit where the
+operation requires them. Caller-supplied identity labels are not proof.
+Shared credentials cannot establish separate human and agent identities.
 
-That meaning must outlive the current model, database, application, and provider.
+Build and administration access is different from ordinary runtime access.
+A privileged construction tool must not become the permanent user-facing path.
+Supabase User MCP is the intended principal-bound application-data component;
+its repository states which profiles are currently accepted.
 
-## The intended end state
+Merge, deployment, production access and publication remain separate decisions.
+A document, public link or successful test does not grant any of them.
 
-For an authorized principal, the system should eventually be able to:
+## Shared foundations, separate deployments
 
-- answer essentially any question that can be answered from the organization's permitted knowledge and connected evidence;
-- understand fuzzy human references in context rather than require database-language precision;
-- know people, places, assets, projects, commitments, policies, relationships, history, preferences, and current operational state;
-- assemble the **smallest sufficient context** for the task instead of dumping an archive into a context window;
-- explain why it believes an answer and expose material uncertainty, conflict, provenance, and staleness;
-- notice when prior understanding is contradicted and propose correction rather than silently overwrite history;
-- plan work, track dependencies, delegate bounded tasks, and preserve handoffs;
-- select an appropriate qualified local model, hosted model, specialized tool, application, or human worker;
-- perform authorized tasks through integrations;
-- obtain required approval before consequential actions;
-- preserve receipts for actions, side effects, failures, reversals, and reconciliation;
-- learn from verified outcomes and corrections without promoting model inference into truth;
-- operate locally or offline where useful;
-- survive provider failure, model replacement, database migration, interface change, and organizational growth;
-- export and reconstruct durable state in an intelligible form outside the current stack.
+Household and business applications share provenance, authority, planning and
+audit concepts. They do not need identical schemas, policies or product behavior.
 
-The aspiration is not a chatbot with a very large memory. It is an **operating substrate for an organization that includes AI participants**.
+Household workflows may cover events, chores, assets, maintenance and family
+planning. Per-person private records remain separate from shared household
+knowledge.
 
-## Accuracy is an architectural property
+Business workflows may cover customers, suppliers, projects, incidents,
+approvals and operations. Their data, credentials and operating authority stay
+with that deployment.
 
-“Wildly accurate” cannot mean selecting a smarter model and trusting it harder.
+Wirespeed maintains the shared program and can also use it in its own business.
+That deployment is not the source of universal policy. A useful local finding
+becomes a public contribution only after it is reduced to a generic example
+and reviewed in the owning repository. Private records, customer information,
+credentials and infrastructure details do not travel with it.
 
-Accuracy comes from the system around the model:
+## Adapt and integrate
 
-1. preserve original evidence;
-2. retain provenance at the level needed to explain material claims;
-3. distinguish observation, assertion, derivation, inference, proposal, acceptance, verification, dispute, rejection, supersession, and unknown;
-4. preserve multiple clocks where they matter: observed, effective, recorded, accepted, superseded;
-5. keep conflicting evidence visible;
-6. resolve entity identity separately from attribute value;
-7. require authority for promotion and consequential change;
-8. test important invariants mechanically;
-9. record actions and outcomes;
-10. feed verified corrections back into future context assembly.
+Use existing standards, models, memory engines and tools where they fit.
+Translate between them when necessary, preserve provenance and disclose any
+information lost in translation. Contribute generic improvements upstream
+where useful.
 
-Self-correction is therefore not a personality trait of the AI. It is a system property produced by provenance, contradiction visibility, proposal/review, supersession, tests, receipts, and reconciliation.
+Do not build a competing replacement merely because a capability belongs to
+another project. Avoid intentional incompatibility and dependence on a single
+vendor.
 
-**Unknown is preferable to plausible fiction.**
+A frontend outside any single model provider is a future direction. It should
+consume the same bounded access and durable records, not become another private
+store of truth.
 
-## Context is assembled, not accumulated
+## Meet the user on the right surface
 
-Continuity should not be solved by giving every model every stored record.
+Choose the interface, timing and level of detail that fit the authorized task.
+A concise answer, calendar item, shared task, dashboard, notification or no
+interruption may each be appropriate.
 
-Contextual awareness means resolving the current request against the organization's governed state:
+Consider privacy, urgency, reversibility and the cost of interrupting the user.
+Do not make the user translate the same intent across several applications.
+Presentation consumes authority; it does not create it.
 
-```text
-principal + request + intent + authority
-        ↓
-resolve subjects and relationships
-        ↓
-retrieve relevant durable knowledge
-and current observations
-        ↓
-attach provenance, conflict, history,
-policy, capabilities, and staleness
-        ↓
-produce a bounded context envelope
-        ↓
-reason / plan / answer / act
-```
+## Keep development useful and honest
 
-Embeddings, vector indexes, caches, summaries, rankings, and model-specific context formats are disposable projections.
+Build small, useful capabilities while foundations are still changing.
+Distinguish planned, implemented, tested, accepted and released states.
+An experimental deployment can reveal a defect without proving readiness.
 
-They are not the durable truth.
+Use one implementation owner per task. Preserve independent review where
+needed, explicit transition states and receipts for consequential actions.
+Governance should protect useful work without consuming more effort than it saves.
 
-## Knowledge, state, planning, action, and evidence are different
+A repository should have a clear reason to exist: a trust boundary, release
+cycle, implementation lifecycle, licensing boundary or independent evidence
+role. Consolidate weak boundaries when practical.
 
-The platform must resist turning everything into one generic memory system.
-
-- **Knowledge** is durable understanding of reality and history.
-- **Operational state** is what is happening now and may become irrelevant quickly.
-- **Planning** is intended work, dependency, ownership, sequencing, review, and acceptance.
-- **Action** is an authorized attempt to change reality.
-- **Evidence and receipts** support claims about what occurred.
-
-These things connect, but they have different lifecycles and authorities.
-
-That is why Home Assistant telemetry, household assets, a family kanban, financial history, model coordination, and action receipts should not become one giant table simply because one AI may reason across them.
-
-## Presentation and presence are first-class behavior
-
-A technically correct answer delivered on the wrong surface, at the wrong time, or with unnecessary user effort is an incomplete outcome.
-
-The system therefore needs to reason about **how, where, and when** useful context or action should meet the user.
-
-Given an intent and authorized context, it should consider:
-
-- who the user or audience is;
-- what the user is actually trying to accomplish;
-- what device or surface is available: chat, phone, calendar, smart display, voice, dashboard, Home Assistant, email, shared board, business workspace, or future interface;
-- timing, urgency, interruption cost, persistence, privacy, and reversibility;
-- whether the best outcome is a simple answer, visualization, reminder, calendar item, shared task, notification, automation, integration, offer, or no additional presentation at all;
-- what authority exists to present, propose, schedule, share, or act.
-
-The governing interaction principle is friction reduction: **take the shortest trustworthy path from human intent to a useful outcome**.
-
-The human should not have to understand the plumbing or translate the same intent across five applications.
-
-Presentation remains a consumer of authority, not a source of it. A calendar, smart display, dashboard, notification, or Home Assistant surface does not become canonical truth because information appears there.
-
-## Authority belongs below the model
-
-Models and agents are workers, not self-authorizing principals.
-
-Prompts may improve behavior, but they are not security boundaries.
-
-Real authority must ultimately be represented and enforced through appropriate mechanisms such as:
-
-- authenticated human and agent identity;
-- scoped credentials and tokens;
-- database grants and row-level policy;
-- capability-specific tools;
-- integration scopes;
-- sandbox boundaries;
-- approvals;
-- revocation and expiry;
-- audit and receipts.
-
-The current privileged Supabase MCP is intentionally the **build/control plane**. It exists because the system is still being constructed, migrated, inspected, repaired, and recovered.
-
-It is not the eventual ordinary user or agent runtime access model.
-
-`Supabase_user_MCP` is the intended principal-bound runtime data plane. RLS/grant enforcement is prepared while the system is built, then activated as a coordinated runtime cutover once the access path can exercise and prove those policies.
-
-This is sequencing, not abandonment of security.
-
-## One kernel, different organizations
-
-The household and business systems should not be one schema copied twice.
-
-They are separate organizational deployments over shared architectural primitives.
-
-### Household
-
-A household implementation can model people, family roles, rooms, places, devices, vehicles, appliances, infrastructure, services, school, activities, events, chores, maintenance, projects, purchases, errands, food, preferences, household history, troubleshooting, planning, and household agents.
-
-Per-person private domains remain distinct from shared household knowledge.
-
-The practical test is whether questions such as:
-
-> “The living-room TV won't work.”
-
-> “What's lunch at school Tuesday?”
-
-> “Which furnace filter do I need?”
-
-> “What needs attention this weekend?”
-
-can be answered from the household's actual context and history rather than generic internet advice.
-
-### Business
-
-A business implementation may model people, teams, contractors, products, suppliers, quotes, orders, inventory, customers, projects, incidents, approvals, compliance, evidence, meetings, planning, and operational workflows.
-
-Its ontology, policies, credentials, integrations, and operational authority remain business-owned.
-
-Household OS and Business OS are therefore **organizational peers in end-state function**. Both seek continuity, context, correction, planning, safe action, and audit.
-
-They do not need identical tables, product behavior, or policy.
-
-### Wirespeed and the upstream program
-
-There is a second relationship axis.
-
-Wirespeed is a **downstream business dogfood consumer** of the shared upstream development program.
-
-Its discoveries can produce generic improvements upstream, but only through deliberate genericization and normal review:
-
-```text
-upstream contracts and reference components
-        ↓
-Wirespeed business adaptation
-        ↓
-real dogfood observations and defects
-        ↓
-public-safe generic proposal
-        ↓
-owning upstream repository review
-        ↓
-accepted generic improvement
-        ↓
-optional downstream adoption
-```
-
-A downstream finding does not self-promote into upstream truth.
-
-An upstream change does not automatically become business policy.
-
-Private business data, deployment authority, customer information, topology, credentials, and migration bodies do not travel upstream merely because a useful generic idea was discovered downstream.
-
-## Why there are multiple repositories
-
-The repository count is not purely accidental fragmentation. The system has been decomposed along real boundaries that sometimes need independent development, proof, publication, replacement, trust, licensing, or release cycles.
-
-Those concerns include protocol semantics, PostgreSQL reference implementation, principal-bound access, household architecture, business architecture, private deployment overlays, planning, runtime orchestration, model qualification, portable storage, ingestion, review interfaces, reusable skills, integrations, recovery, and evidence.
-
-But repository count is also a tax.
-
-A repository should earn its existence through a real independent trust boundary, publication boundary, release lifecycle, evidence role, licensing boundary, or implementation lifecycle. Weak boundaries should consolidate or archive rather than survive forever because they already exist.
-
-No child repository is the entire project.
-
-## The role of this parent repository
-
-The public parent is the **human and agent front door** to the program.
-
-It should answer:
-
-1. What are we building and why?
-2. Which principles must survive implementation changes?
-3. Which public components own which concerns?
-4. What should a new human or AI read next?
-5. What private coverage is intentionally omitted?
-
-It is a router and public framing layer.
-
-It is **not** a monorepo, second implementation repository, duplicate planning database, copy of every child roadmap, private topology mirror, filesystem replacement for database authority, or source of permission because Markdown says an agent may act.
-
-**Routes point to authority. They do not create authority.**
-
-## Open by design
-
-AI technology is too young for this architecture to assume today's winner will remain tomorrow's winner.
-
-The program should **use and translate rather than compete and replace**.
-
-When standards, protocols, formats, transports, runtimes, or models emerge:
-
-- use them where they fit;
-- profile meaningful differences;
-- translate between them;
-- disclose lossiness;
-- retain provenance through translation;
-- support multiple approaches where the ecosystem has not converged;
-- avoid intentional incompatibility and walled gardens;
-- contribute generic improvements upstream when possible.
-
-The goal is not to make one project component “win.”
-
-The goal is for the user's durable meaning and authority to survive **whichever technologies eventually win**.
-
-## The evolutionary progression
-
-The system is easier to understand as a progression driven by what the frontier makes possible:
-
-```text
-protocol / durable meaning / custody
-        ↓
-reference implementation + restore/conformance proof
-        ↓
-principal-bound user and agent access
-        ↓
-household and business domain models
-        ↓
-planning + context + worker/runtime coordination
-        ↓
-presentation and presence
-        ↓
-ambient stewardship
-        ↓
-sanitary steward-to-steward exchange across trust domains
-        ↓
-external agent/service networks
-        ↓
-physical sensing and actuation where useful
-```
-
-Some later pieces have not been invented yet.
-
-That is expected.
-
-The architecture should build useful capability now while leaving clean seams for capabilities that appear as the frontier evolves.
-
-## Building the spaceship while flying it
-
-This platform is already producing useful results while foundational pieces are under construction.
-
-That reality should be represented honestly.
-
-A privileged build credential can be necessary today without being acceptable as permanent runtime identity.
-
-RLS can be prepared before activation without claiming that multi-principal isolation is currently enforced.
-
-A context map can be useful while remaining explicitly non-authoritative.
-
-A dogfood deployment can expose an upstream-quality defect without gaining authority over the upstream architecture.
-
-An agent can perform bounded implementation work without acquiring merge, deployment, credential, or policy authority.
-
-Premature claims of completeness are defects.
-
-But freezing useful development merely because an end-state control cannot yet be safely activated is also a mistake.
-
-The project must preserve **explicit transition states**.
-
-## Durable over fashionable
-
-If this system is intended to last for decades, optimize for what survives.
-
-Durable:
-
-```text
-stable identity
-source evidence
-provenance
-accepted decisions
-temporal lineage
-authority
-schema semantics
-versioned contracts
-action receipts
-exports
-restore proof
-migration history
-source lineage
-```
-
-Disposable and rebuildable:
-
-```text
-embeddings
-vector indexes
-caches
-summaries
-model-specific prompts
-hot-context rankings
-current user interfaces
-current model routes
-current providers
-current orchestration runtimes
-```
-
-A future frontier model should be able to become dramatically more capable than today's models without requiring the human or organization to surrender or rewrite its history.
-
-## Anti-goals
-
-The program must not become:
-
-- a financial project whose architecture is optimized for monetization;
-- a monolithic everything-app;
-- a vendor-owned memory silo or proprietary walled garden;
-- generic RAG mistaken for organizational memory;
-- an AI agent with unrestricted owner credentials;
-- a flat archive that loses source, time, authority, conflict, and correction;
-- a hand-maintained context tree that becomes a competing authority;
-- a system where model confidence becomes authority;
-- a system where one deployment's private policy silently becomes universal protocol;
-- governance machinery that consumes more effort than the useful capability it protects;
-- a permanent architecture exercise that fails to make ordinary life and work more useful.
+This parent repository explains purpose and routes readers to the right owner.
+It is not a second task database, a private deployment map or a source of runtime
+permission.
 
 ## Design test
 
-Every substantial addition should be challenged with the same questions:
+Before a substantial addition, ask:
 
-1. Does the human or organization retain ownership of canonical meaning and evidence?
-2. Can today's model, provider, runtime, application, or storage substrate be replaced?
-3. Is provenance retained through observation, transformation, inference, acceptance, and action?
-4. Is authority explicit and enforced outside the model where consequences require it?
-5. Are time, correction, conflict, and supersession represented honestly?
-6. Does the component have a clear source of truth instead of creating another authority?
-7. Can private deployment boundaries survive public documentation and generic contribution?
-8. Can durable state be exported, restored, and independently reconstructed?
-9. Does this improve concrete capability, continuity, accuracy, or sovereignty?
-10. Does it preserve more future options rather than locking the program into today's answer?
+1. Does it improve a concrete task for a person or organization?
+2. Can the current model, provider, interface or storage implementation be replaced?
+3. Are source evidence, time, conflict and correction preserved?
+4. Is authority explicit and enforced where consequences require it?
+5. Does it have a clear source of truth and protect private deployment boundaries?
+6. Can durable state be exported, restored and independently verified?
+7. Are its claims supported by evidence for the relevant revision and environment?
 
-## Definition of success
+Avoid an unrestricted agent, a monolithic everything-app, a vendor-owned memory
+silo, a flat archive without provenance, or revenue-driven lock-in.
 
-The project succeeds when a new authorized frontier model can be introduced years from now and, without Jesse retelling his life or an organization rebuilding its institutional memory, it can:
+## Success and orientation
 
-- understand what the organization is;
-- discover the relevant context without reading everything;
-- distinguish evidence from inference and present state from history;
-- understand what it may access and what it may do;
-- locate the component or integration that owns the task;
-- answer with provenance and calibrated uncertainty;
-- perform authorized work through bounded tools;
-- leave durable receipts;
-- accept correction without erasing history;
-- hand work to another model or human without losing continuity;
-- and itself be replaced without taking the organization's memory, authority, or operational history with it.
+Success means an authorized replacement model can find relevant context,
+understand its permissions, answer with evidence, perform bounded work and
+leave useful receipts without the human rebuilding their history. That model
+must itself remain replaceable.
 
-**That is the north star.**
+Start here, then read [ROUTES.md](ROUTES.md), the owning component and the exact
+issue or evidence needed for the task. Read [HORIZON.md](HORIZON.md) only when
+future direction matters. Do not recursively load every repository.
 
-## Orientation contract for a new frontier AI
-
-A new model should not begin by recursively reading every repository.
-
-It should orient in this order:
-
-```text
-THESIS.md
-        ↓
-ROUTES.md
-        ↓
-HORIZON.md only when future direction matters
-        ↓
-owning child repository
-        ↓
-exact task / issue / decision / evidence
-        ↓
-minimum additional source required to act safely
-```
-
-When sources conflict, preserve the conflict and follow the real authority hierarchy.
-
-When evidence is stale or absent, report `unknown` rather than manufacture continuity.
-
-When a task crosses personal, household, business, or administrative trust boundaries, resolve the authority boundary before combining context or acting.
+When sources conflict, preserve the conflict and resolve the real authority.
+When a task crosses personal, household, business or administrative boundaries,
+resolve permission before combining context or acting.

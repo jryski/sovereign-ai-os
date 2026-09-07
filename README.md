@@ -1,127 +1,83 @@
 # Sovereign AI OS
 
-**A sovereign operating substrate for people and organizations in an age of abundant intelligence.**
+User-controlled memory and bounded tools that work across AI assistants.
 
-Sovereign AI OS is a long-lived, owner-controlled foundation for AI that preserves durable meaning, evidence, authority, context, work, and action history while models, vendors, applications, runtimes, and storage systems remain replaceable.
+WIRE SPEED COMPUTING LLC maintains this program, led by Jesse Ryski.
+The aim is to keep evidence, decisions, permissions and work history usable
+when models, applications or providers change.
 
-This is a **functional sovereignty project**, not a startup thesis or financial endeavor. The goal is to build infrastructure that can grow with AI for decades without requiring a person, household, or organization to surrender its accumulated context to whichever vendor has the best assistant this year.
+[Website and development notes](https://www.wirespeedcomputers.com/) |
+[Component routes](ROUTES.md) | [Project principles](THESIS.md)
 
-> **If intelligence becomes cheap, abundant, persistent, multimodal, agentic, networked, and eventually embodied, what infrastructure must a human or organization own so that intelligence reliably acts in their interest?**
+## What we are building
 
-This repository is the public front door to that work.
+The components separate durable records from the tools that use them:
 
-## Start here
+1. Keep source evidence, changes and decisions in a store the user controls.
+2. Give each authorized person or agent a limited path to that data.
+3. Build household and business workflows on those shared foundations.
+4. Use existing models, standards and services where they fit.
 
-1. **[THESIS.md](THESIS.md)** — why the project exists and the principles that should survive changes in technology.
-2. **[HORIZON.md](HORIZON.md)** — the plausible future the architecture is trying to keep open. This is directional, not a claim about current capability.
-3. **[ROUTES.md](ROUTES.md)** — where public implementation concerns live and which repository owns them.
-4. **[CONTEXT.md](CONTEXT.md)** — a thin, non-normative routing guide for new AI agents and contributors.
-5. **[decisions/](decisions/)** — concise public decision pointers. They summarize rulings; they do not create authority.
+A frontend outside any single model provider is a future direction, not a
+delivered application. This is not an attempt to replace every assistant,
+memory engine or integration.
 
-## The progression
+## Current state
 
-The repositories make more sense as an evolutionary dependency chain than as independent projects:
+The complete system is not built. Component repositories own their code,
+tests, decisions and release status. Their green checks do not establish
+production readiness for a deployment.
 
-```text
-sovereign memory / protocol semantics
-        ↓
-reference implementation + recovery/conformance proof
-        ↓
-principal-bound user/agent data access
-        ↓
-household and business domain deployments
-        ↓
-planning + context + worker/runtime routing
-        ↓
-presentation and presence
-        ↓
-ambient stewardship
-        ↓
-sanitized steward-to-steward exchange
-        ↓
-external agent/service networks
-        ↓
-physical sensing and actuation where useful
-```
+| Component | Purpose | Current limit |
+| --- | --- | --- |
+| [Sovereign Memory Core](https://github.com/jryski/sovereign-memory-core) | PostgreSQL memory, provenance and change history | Experimental; independent deployment acceptance and portable recovery remain open |
+| [Supabase User MCP](https://github.com/jryski/Supabase_user_MCP) | Limited application-data access under user/client database permissions | Accepted local, read-only, synthetic-data profile; remote OAuth remains under review |
+| [Household OS](https://github.com/jryski/Household-OS) | Household planning and integration patterns | Early implementation with synthetic examples; not a ready-to-run household product |
+| [Sovereign Vault](https://github.com/WireSpeedComputing/Sovereign-Vault) | Business knowledge and operations schemas | Shared credentials do not prove separate human and agent identity |
+| [Public AI Skills](https://github.com/jryski/Public_AI_SKills) | Reusable problem-solving skills | Personal-use license; organizational use needs separate written permission |
 
-Not every layer is implemented yet. Some capabilities have not been invented yet. The architectural goal is to build useful capability now while leaving clean seams for the frontier to evolve.
+User MCP's alpha release-candidate metadata is merged. Remote access is tracked
+in [draft PR #64](https://github.com/jryski/Supabase_user_MCP/pull/64);
+publication remains a separate decision under
+[issue #61](https://github.com/jryski/Supabase_user_MCP/issues/61).
+Read the component's current evidence before using it.
 
-## Public component repositories
+## Where to start
 
-This parent exists because the program is implemented across multiple bounded repositories. The important public components are:
+- [THESIS.md](THESIS.md): purpose and principles.
+- [ROUTES.md](ROUTES.md): the repository that owns each concern.
+- [CONTEXT.md](CONTEXT.md): a short routing guide for agents and contributors.
+- [HORIZON.md](HORIZON.md): possible future capabilities, not present features.
+- [decisions/](decisions/): public decision pointers.
 
-| Component | Role in the program |
-| --- | --- |
-| **[Sovereign Memory Core](https://github.com/jryski/sovereign-memory-core)** | PostgreSQL reference implementation, custody/recovery/conformance proof, adversarial testing, and portable implementation evidence. |
-| **[Supabase User MCP](https://github.com/jryski/Supabase_user_MCP)** | Principal-bound runtime data plane for users and agents, including identity, narrow capabilities, and database-enforced authorization. |
-| **[Household OS](https://github.com/jryski/Household-OS)** | Public household-domain reference architecture and synthetic patterns for shared household knowledge, planning, assets, events, and integrations. |
-| **[Sovereign Vault](https://github.com/WireSpeedComputing/Sovereign-Vault)** | Public multi-user business-domain reference architecture and downstream business dogfood surface. |
-| **[Public AI Skills](https://github.com/jryski/Public_AI_SKills)** | Portable, inspectable AI operating behaviors and skills that can be used across models and runtimes. |
+For implementation work, follow the owning repository's issue, code and
+review process. This parent is an orientation guide, not another task
+database or source of runtime permission.
 
-There are additional private and operational components for protocol/specification work, runtime/orchestration, deployment overlays, model qualification, ingestion, recovery, and review. Those private repositories are intentionally **not named or linked from this public parent by default**. Their absence here is a disclosure boundary, not evidence that they do not exist.
+## Company, funding and licensing
 
-For task-level routing and authority boundaries, see **[ROUTES.md](ROUTES.md)**.
+WIRE SPEED COMPUTING LLC provides the business home for development,
+cost tracking and future support or licensing arrangements. The technical
+goal remains user control and interoperability, not dependence on one vendor.
 
-## What this parent repository is
+Company maintenance does not change existing license terms or assign
+contributors' rights. Check each repository's license and notices; do not
+assume every component has the same terms.
 
-This repository exists to answer:
+## Public and private boundaries
 
-- What are we building and why?
-- What principles are invariant?
-- Which public component owns a concern?
-- What should a new human or AI read next?
-- What private coverage is intentionally omitted?
+Public material contains code, architecture, synthetic fixtures and sanitized
+lessons. Credentials, real household or business records, private deployment
+details and restricted review evidence stay out.
 
-It is a **router and human-readable program front door**.
+Household and business deployments may use different schemas and policies.
+A useful local finding becomes a generic contribution only after review.
+A public link does not grant access to a private system.
 
-## What this parent repository is not
+## Development process
 
-It is not:
+Use one implementation owner per task and independent review where needed.
+Keep planned, implemented, tested and released states distinct. Merge,
+deployment and publication require their own approval.
 
-- a monorepo;
-- a second implementation authority;
-- a duplicate planning/task database;
-- a mirror of private deployment topology;
-- a source of runtime permission;
-- a replacement for the owning repository's code, tests, issues, releases, or evidence;
-- a claim that every horizon idea already works.
-
-**Routes point to authority. They do not create it.**
-
-## Two organizational deployment families
-
-The same kernel ideas can serve very different organizations without forcing schema parity.
-
-### Household OS
-
-The household deployment can model people, rooms, devices, vehicles, school, events, maintenance, food, preferences, projects, routines, shared planning, and household history while preserving per-person private trust domains.
-
-### Business OS
-
-The business deployment can model people, teams, products, suppliers, customers, projects, incidents, compliance, approvals, planning, and business-specific integrations under a different trust and policy model.
-
-Household and Business OS are peers in end-state function. Their tables, policies, stores, principals, and integrations are allowed to diverge.
-
-Wirespeed additionally serves as downstream business dogfood: useful generic lessons can be contributed upstream through normal public-safe review without moving private business data or authority with them.
-
-## Build the spaceship while flying it
-
-This platform is already useful while foundational pieces are still under construction. Transitional states must therefore be explicit.
-
-For example, the current privileged Supabase MCP is a build/control-plane tool. The intended runtime path is principal-bound through the User MCP, with database-enforced policy activated through a coordinated cutover once it can actually be exercised and proven.
-
-Premature claims of completeness are defects. So is freezing useful development because an end-state mechanism cannot yet be safely activated.
-
-## Public/private boundary
-
-Public repositories contain generic architecture, code, synthetic fixtures, tests, and sanitized lessons.
-
-Private deployments, private repository locators, credentials, real household/business data, topology, private planning state, and restricted evidence are omitted from this parent by default.
-
-Absence from this public router does **not** mean a private component does not exist.
-
-## Current status
-
-This parent repository is being established as the single maintained public cross-program orientation surface. Child repositories remain authoritative for their own implementation. Cross-program umbrella material previously living in Sovereign Memory Core will be reduced to compatibility pointers after this parent is accepted.
-
-The project deliberately favors useful capability over governance theater: frontier models for architecture/security/judgment, local and cheaper models for bounded execution, and review depth proportional to consequence.
+The website explains the work for readers. Repositories provide the evidence.

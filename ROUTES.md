@@ -13,7 +13,7 @@ It is **not** a status database, permission file, or complete inventory. Private
 | Public household-domain architecture and synthetic household patterns | [`jryski/Household-OS`](https://github.com/jryski/Household-OS) | Household reference schemas/contracts/tests only |
 | Public business-domain reference architecture | [`WireSpeedComputing/Sovereign-Vault`](https://github.com/WireSpeedComputing/Sovereign-Vault) | Generic business schemas/contracts/tests only |
 | Reusable AI skills | [`jryski/Public_AI_SKills`](https://github.com/jryski/Public_AI_SKills) | Skill specifications, versions, usage/license terms |
-| Public parent routing/orientation | [`jryski/sovereign-ai-os`](https://github.com/jryski/sovereign-ai-os) | Routing and public program orientation only |
+| Public parent routing/orientation | [`WireSpeedComputing/sovereign-ai-os`](https://github.com/WireSpeedComputing/sovereign-ai-os) | Routing and public program orientation only |
 
 ## Private and operational coverage
 
